@@ -1,0 +1,86 @@
+{
+  "name": "taskmanager",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "dev": "tailwindcss -i ./static/src/input.css -o ./static/css/output.css --watch",
+    "build": "tailwindcss -i ./input.css -o ./output.css --minify",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@tailwindcss/postcss": "^4.2.1",
+    "postcss": "^8.5.6"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.2.1"
+  },
+   "tailwind.config" : {
+            "darkMode": "class",
+            "theme": {
+                "extend": {
+                    "colors": {
+                        "on-background": "#e1e2eb",
+                        "on-primary-fixed": "#002022",
+                        "on-surface": "#e1e2eb",
+                        "tertiary": "#fff6e4",
+                        "on-secondary-fixed": "#23005b",
+                        "surface-container-lowest": "#0b0e14",
+                        "surface-container-low": "#191c22",
+                        "surface-tint": "#00dbe7",
+                        "primary-container": "#00f2ff",
+                        "inverse-primary": "#00696f",
+                        "inverse-on-surface": "#2e3037",
+                        "tertiary-fixed-dim": "#e8c423",
+                        "error": "#ffb4ab",
+                        "on-tertiary-fixed-variant": "#554500",
+                        "tertiary-fixed": "#ffe173",
+                        "on-tertiary": "#3b2f00",
+                        "on-secondary": "#3c0090",
+                        "surface-container-highest": "#32353c",
+                        "on-primary-container": "#006a71",
+                        "surface-container-high": "#272a31",
+                        "primary-fixed-dim": "#00dbe7",
+                        "secondary-fixed-dim": "#d1bcff",
+                        "secondary-container": "#7000ff",
+                        "on-tertiary-fixed": "#221b00",
+                        "tertiary-container": "#fed83a",
+                        "on-error-container": "#ffdad6",
+                        "error-container": "#93000a",
+                        "surface": "#10131a",
+                        "inverse-surface": "#e1e2eb",
+                        "primary-fixed": "#74f5ff",
+                        "on-secondary-container": "#ddcdff",
+                        "outline-variant": "#3a494b",
+                        "on-surface-variant": "#b9cacb",
+                        "on-error": "#690005",
+                        "surface-variant": "#32353c",
+                        "background": "#10131a",
+                        "surface-dim": "#10131a",
+                        "outline": "#849495",
+                        "on-primary": "#00363a",
+                        "primary": "#e1fdff",
+                        "surface-container": "#1d2026",
+                        "on-secondary-fixed-variant": "#5700c9",
+                        "on-tertiary-container": "#725e00",
+                        "on-primary-fixed-variant": "#004f54",
+                        "secondary": "#d1bcff",
+                        "secondary-fixed": "#e9ddff",
+                        "surface-bright": "#363940"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Space Grotesk"]
+                    }
+                }
+            }
+        }
+}
