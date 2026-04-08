@@ -33,13 +33,28 @@
     </nav>
 
     <aside class="w-64 h-full border-r fixed bg-slate-900/40 backdrop-blur-md top-16 left-0 border-cyan-400 flex flex-col">
-        <div x-data="user" x-init="setInterval(() => count--, 1000)" class="w-full pt-10 mx-auto flex flex-col items-center justify-center">
+        <div x-data="user"  class="w-full mb-10 pt-10 mx-auto flex flex-col items-center justify-center">
             <p class="text-xl text-cyan-500 font-bold ">
                 NEURAL OS
             </p>
             <p class="text-gray-500 text-sm">
                 ACTIVE SESSION: <span x-text="count"></span>
             </p>
+        </div>
+
+        <div class="flex flex-col items-start justify-center *:w-full *:p-4  *:cursor-pointer *:active:scale-95 *:hover:bg-slate-900 text-xs text-gray-600 text-left text-shadow-cyan-700">
+            <button class="home-btn">
+                COMMAND CENTER
+            </button>
+            <button>
+                TASK NEBULA
+            </button>
+            <button>
+                FOCUS CHAMBER
+            </button>
+            <button>
+                TIMELINE MATRIX
+            </button>
         </div>
         
 
