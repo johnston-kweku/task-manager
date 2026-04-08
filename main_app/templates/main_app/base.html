@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="{% static 'css/output.css' %}">
     
 </head>
-<body class="font-mono bg-slate-950">
+<body x-data="user" class="font-mono bg-slate-950">
     <nav class="bg-slate-900/40 backdrop-blur-md w-full shadow-lg flex items-center justify-between shadow-sky-500 fixed top-0 left-0 p-4">
         <div class="flex gap-2">
             <p class="text-cyan-500 text-xl shadow-lg w-fit font-bold">
@@ -16,6 +16,7 @@
             </p>
 
             <input type="search" placeholder="QUERY SYSTEM..." class="bg-slate-800 border text-sm text-gray-500 px-3 shadow-sky-500 border-sky-500 rounded relative">
+
         </div>
 
         <div class="flex gap-5 *:cursor-pointer *:w-6 *:h-6 *:active:scale-95">
@@ -32,7 +33,7 @@
     </nav>
 
     <aside class="w-64 h-full border-r fixed bg-slate-900/40 backdrop-blur-md top-16 left-0 border-cyan-400 flex flex-col">
-        <div x-data="{ count : 5}" x-init="setInterval(() => count++, 1000)" class="w-full pt-10 mx-auto flex flex-col items-center justify-center">
+        <div x-data="user" x-init="setInterval(() => count--, 1000)" class="w-full pt-10 mx-auto flex flex-col items-center justify-center">
             <p class="text-xl text-cyan-500 font-bold ">
                 NEURAL OS
             </p>
