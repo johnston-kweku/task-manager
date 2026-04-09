@@ -6,11 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="{% static 'css/output.css' %}">
-    
 </head>
-<body x-data="user" class="font-mono bg-slate-950">
+<body x-data="user" class="font-mono bg-slate-950 relative">
     <nav class="bg-slate-900/40 backdrop-blur-md w-full shadow-lg flex items-center justify-between shadow-sky-500 fixed top-0 left-0 p-4">
-        <div class="flex gap-2">
+        <div class="flex gap-8">
             <p class="text-cyan-500 text-xl shadow-lg w-fit font-bold">
                 NEURAL COMMAND
             </p>
@@ -32,21 +31,24 @@
         </div>
     </nav>
 
-    <aside class="w-64 h-full border-r fixed bg-slate-900/40 backdrop-blur-md top-16 left-0 border-cyan-400 flex flex-col">
+    <!-- Side bar -->
+    <aside class="w-2/12 h-full z-40 border-r fixed bg-slate-900/40 backdrop-blur-md top-16 left-0 border-cyan-400 flex flex-col">
         <div x-data="user"  class="w-full mb-10 pt-10 mx-auto flex flex-col items-center justify-center">
             <p class="text-xl text-cyan-500 font-bold ">
                 NEURAL OS
             </p>
-            <p class="text-gray-500 text-sm">
-                ACTIVE SESSION: <span x-text="count"></span>
+            <p x-data="{number: {{tasks}}}" class="text-gray-500 text-sm">
+                ACTIVE SESSION: <span x-text="number"></span>
             </p>
         </div>
 
-        <div class="flex flex-col items-start justify-center *:w-full *:p-4  *:cursor-pointer *:active:scale-95 *:hover:bg-slate-900 text-xs text-gray-600 text-left text-shadow-cyan-700">
-            <button class="home-btn">
+        <div class="flex flex-col items-start justify-center *:w-full *:p-4   *:cursor-pointer *:active:scale-95 *:hover:bg-slate-900 text-xs text-gray-600 text-left text-shadow-cyan-700">
+            <button class="flex gap-2 items-center {% if request.resolver_match.url_name == 'home' %}shadow-[inset_10px_0_15px_-10px_rgba(0,242,255,0.3)] border-l-3 border-cyan-500 text-cyan-400 bg-cyan-950/80 shadow-sky-600 {% endif %}">
+                <img src="{% static 'assets/images/dashboard.svg'%}" class="w-4 h-4">
                 COMMAND CENTER
             </button>
-            <button>
+            <button class=" flex gap-2 items-center">
+                <img src="{% static 'assets/images/bubble.png'%}" class="w-4 h-4" alt="">
                 TASK NEBULA
             </button>
             <button>
@@ -56,9 +58,12 @@
                 TIMELINE MATRIX
             </button>
         </div>
-        
-
     </aside>
+    <!-- End of side bar -->
+
+    <main id="main-container" class="text-cyan-400 border-4 border-cyan-400 overflow-auto" style="margin-left:16.6667%; margin-top:4rem; height:calc(100vh - 4rem);">
+        Hello
+    </main>
 
 
     <script type="importmap">
