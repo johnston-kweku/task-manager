@@ -45,7 +45,7 @@ document.addEventListener('alpine:init', () => {
         },
 
         get percent(){
-            return Math.floor((this.secondsLeft / this.totalSeconds) * 100);
+            return Math.floor((this.secondsLeft / this.totalSeconds) * 100); 
         },
 
         get offset() {
@@ -53,7 +53,7 @@ document.addEventListener('alpine:init', () => {
             return circumference - (this.secondsLeft / this.totalSeconds) * circumference
         },
 
-        
+
         get priorityClasses() {
         const themes = {
             'THREAT_LEVEL_RED': 'border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.3)]',
@@ -66,4 +66,3 @@ document.addEventListener('alpine:init', () => {
 })
 
 Alpine.start()
-
