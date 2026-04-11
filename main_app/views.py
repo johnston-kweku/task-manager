@@ -1,11 +1,26 @@
 from django.shortcuts import render
+from django.db.models import Count
 from .models import Task
+
 
 # Create your views here.
 
 def home(request):
     tasks = Task.objects.filter(completed=False)
-    return render(request, 'main_app/index.html', {'tasks':tasks})
+
+    completed_tasks = Task.objects.filter(completed=True).count()
+    total_tasks = Task.objects.all().count()
+
+    sync_rate = (completed_tasks / total_tasks * 100) if total_tasks > 0 else 0
+    sync_rate = round(sync_rate, 1)
+
+    active_task = Task.objects.filter(is_active=True).first()
+    context = {
+        'tasks':tasks,
+        'sync_rate':sync_rate,
+        'active_task':active_task
+    }
+    return render(request, 'main_app/index.html', context) 
 
 
 

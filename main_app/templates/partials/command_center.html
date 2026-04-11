@@ -4,16 +4,17 @@
         <p class="text-xs text-gray-400">STATUS: ALL SYSTEMS OPERATIONAL</p>
     </div>
 
-    <div class="flex flex-col gap-2 shadow-2xl shadow-slate-900 rounded items-center justify-center px-4 py-2">
+    <div x-data="{ syncRate: {{sync_rate}}}" class="flex flex-col gap-2 shadow-2xl glass-panel shadow-slate-900 rounded items-center justify-center px-4 py-2">
         <p class="text-[10px] font-light">SYNC RATE</p>
-        <p class="text-cyan-400 font-extrabold text-xl">98.4%</p>
+        <p x-text="syncRate +'%'" class="text-cyan-400 font-extrabold text-xl"></p>
     </div>
 </div>
 
-<div class="w-full px-8 py-2 grid grid-cols-2 gap-8">
+<div x-data="taskTimer({{task.duration.total_seconds|default:3600}})" class="w-full px-8 py-2 grid grid-cols-3 gap-8">
 
     <!-- Left column: Focus Progress card -->
-    <div class="relative shadow-xl shadow-cyan-900 rounded-lg p-4 w-80 overflow-hidden bg-slate-900/20">
+    <div x-data="taskTimer({{ active_task.duration.total_seconds|default:0 }})" 
+     x-init="isActive = true; start()"  class="relative shadow-xl shadow-cyan-900 rounded-lg p-4 w-80 overflow-hidden bg-slate-900/20">
         <div class="w-full absolute border-2 border-cyan-500/30 rounded-t-lg top-0 left-0"></div>
 
         <div class="w-full max-w-sm overflow-hidden">
@@ -21,13 +22,19 @@
 
             <div class="w-full flex items-center justify-center my-5">
                 <div class="relative w-64 h-64 flex items-center justify-center mx-auto">
+                    
                     <svg class="w-full h-full transform -rotate-90">
                         <circle class="text-slate-900" cx="128" cy="128" fill="transparent" r="110" stroke="currentColor" stroke-width="12"></circle>
-                        <circle class="glow-cyan" cx="128" cy="128" fill="transparent" r="110" stroke="#00f2ff" stroke-dasharray="691" stroke-dashoffset="172" stroke-linecap="round" stroke-width="12"></circle>
+                        
+                        <circle class="glow-cyan transition-all duration-1000 ease-linear" 
+                                cx="128" cy="128" fill="transparent" r="110" stroke="#00f2ff" 
+                                stroke-dasharray="691" 
+                                :stroke-dashoffset="offset" 
+                                stroke-linecap="round" stroke-width="12"></circle>
                     </svg>
 
                     <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
-                        <span class="text-5xl font-headline font-black text-cyan-400 tracking-tighter text-glow">75%</span>
+                        <span x-text="percent + '%'" class="text-5xl font-headline font-black text-cyan-400 tracking-tighter text-glow"></span>
                         <span class="text-[0.6875rem] font-label uppercase tracking-widest text-slate-500">Neural Sync</span>
                     </div>
                 </div>
@@ -50,34 +57,37 @@
     <!-- /.Focus Progress card -->
 
     <!-- Right column: Critical Missions -->
-    <div class="shadow-xl shadow-cyan-900 rounded-lg border border-cyan-500/20 p-6 bg-slate-900/40">
+    <div class="shadow-xl shadow-cyan-900 col-span-2 rounded-lg border border-cyan-500/20 p-6 bg-slate-900/40">
         <h2 class="font-bold flex gap-2 text-cyan-400 mb-4 tracking-widest">
-            <svg class="w-6 h-6" viewBox="0 0 60.601004 60.601004" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" 
-            xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
-            xmlns:svg="http://www.w3.org/2000/svg" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="#000000"><g id="SVGRepo_bgCarrier" 
-            stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> 
-            <title>津波注意（津波危険地帯）; Warning Tsunami hazard zone</title> <defs></defs> <metadata> <rdf:rdf> <cc:work rdf:about=""> 
-            <dc:format>image/svg+xml</dc:format> <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"></dc:type> <dc:title>津波注意（津波危険地帯）; 
-            Warning Tsunami hazard zone</dc:title> <dc:source>http://www.ecomo.or.jp/barrierfree/pictogram/data/zukigo_panfu_jis110.pdf</dc:source> </cc:work> 
-            </rdf:rdf> </metadata> <path d="m 57.316128,56.958628 c 1.125,0 2.225,-0.5825 2.825,-1.63125 0.6125,-1.04625 0.5625,-2.28875 0,-3.265 L 33.128628,5.2773777 
-            c -0.5625,-0.97375 -1.6125,-1.635 -2.8375,-1.635 -1.2,0.0025 -2.25,0.66125 -2.8125,1.635 L 0.46612771,52.062378 c -0.575,0.97625 -0.6125,2.21875 -0.0125,3.265 
-            0.61249999,1.04875 1.69999999,1.63125 2.83749999,1.63125 l 54.0250003,0" style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"></path> 
-            <path d="m 30.291127,9.0848757 -13.85,23.9900003 c 14.9125,-7.8575 22.4375,-2.24875 24.7875,3.58875 l -0.4625,0.26625 c -0.3625,-0.3475 -0.775,-0.65625
-             -1.2375,-0.935 -3.1125,-1.86375 -6.9375,-1.21 -8.55,1.46625 -1.6125,2.685 -0.3875,6.37375 2.725,8.24125 6.1375,3.68625 13.975,2.81 18.725,1.71125 L 30.291127,9.0848757" 
-             style="fill:#f2e700;fill-opacity:1;fill-rule:evenodd;stroke:none"></path> </g></svg>
+            <svg class="w-6 h-6" viewBox="0 0 60.601004 60.601004" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <title>津波注意（津波危険地帯）; Warning Tsunami hazard zone</title> <defs></defs> <metadata> <rdf:rdf> <cc:work rdf:about=""> <dc:format>image/svg+xml</dc:format> <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"></dc:type> <dc:title>津波注意（津波危険地帯）; Warning Tsunami hazard zone</dc:title> <dc:source>http://www.ecomo.or.jp/barrierfree/pictogram/data/zukigo_panfu_jis110.pdf</dc:source> </cc:work> </rdf:rdf> </metadata> <path d="m 57.316128,56.958628 c 1.125,0 2.225,-0.5825 2.825,-1.63125 0.6125,-1.04625 0.5625,-2.28875 0,-3.265 L 33.128628,5.2773777 c -0.5625,-0.97375 -1.6125,-1.635 -2.8375,-1.635 -1.2,0.0025 -2.25,0.66125 -2.8125,1.635 L 0.46612771,52.062378 c -0.575,0.97625 -0.6125,2.21875 -0.0125,3.265 0.61249999,1.04875 1.69999999,1.63125 2.83749999,1.63125 l 54.0250003,0" style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"></path> <path d="m 30.291127,9.0848757 -13.85,23.9900003 c 14.9125,-7.8575 22.4375,-2.24875 24.7875,3.58875 l -0.4625,0.26625 c -0.3625,-0.3475 -0.775,-0.65625-1.2375,-0.935 -3.1125,-1.86375 -6.9375,-1.21 -8.55,1.46625 -1.6125,2.685 -0.3875,6.37375 2.725,8.24125 6.1375,3.68625 13.975,2.81 18.725,1.71125 L 30.291127,9.0848757" style="fill:#f2e700;fill-opacity:1;fill-rule:evenodd;stroke:none"></path> </g></svg>
             <p class="text-glow">CRITICAL MISSIONS</p>
         </h2>
 
         <div class="space-y-4">
             {% for task in tasks %}
-            <div class="p-4 bg-slate-950/50 rounded border-l-2 border-cyan-500 hover:bg-gray-900 flex justify-between items-center transition-all duration-500">
-                <span class="text-sm flex flex-col">
-                    <p>{{task.name|title}}</p>
-                    <p class="text-[10px] text-gray-500">PROJECT: {{task.priority_level}}</p>
-                </span>
-                <span class="text-xs text-cyan-500 font-mono">ACTIVE</span>
-            </div>
-            {% endfor %}
+                <div x-data="taskTimer({{ task.duration.total_seconds }})"
+                    x-init="
+                        priority = '{{ task.priority_level|upper }}'; 
+                        isActive = {{ task.is_active|lower }}; 
+                        if(isActive) start();
+                    "
+                    :class="priorityClasses"
+                    class="p-5 bg-slate-950/50 rounded border-l-2 hover:bg-gray-900 flex justify-between items-center transition-all duration-500 group">
+                    
+                    <span class="text-sm flex flex-col">
+                        <p class="font-bold tracking-tight text-white text-lg">{{ task.name|title }}</p>
+                        <p class="text-[10px] uppercase tracking-widest text-gray-500">PROJECT: {{ task.priority_level }}</p>
+                    </span>
+
+                    <div class="text-right">
+                        <span class="text-xs font-mono transition-all duration-300"
+                            :class="isActive ? (priority === 'THREAT_LEVEL_RED' ? 'text-red-500 animate-pulse' : 'text-cyan-500') : 'text-gray-600 opacity-50'">
+                            <p x-text="isActive ? 'ACTIVE' : 'INACTIVE'"></p>
+                            <p x-text="formatTime()" class="text-white"></p>
+                        </span>
+                    </div>
+                </div>
+                {% endfor %}
         </div>
         <!-- /.space-y-4 -->
     </div>
