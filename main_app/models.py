@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.db import transaction
 # Create your models here.
 
 class Task(models.Model):
@@ -21,6 +21,15 @@ class Task(models.Model):
     )
 
     is_active = models.BooleanField(default=False) 
+
+
+
+    def save(self, *args, **kwargs):
+        if self.is_active:
+            with transaction.atomic():
+                Task.objects.filter(is_active=True).exclude(pk=self.pk).update(is_active=False)
+
+        super().save(*args, **kwargs)
 
 
 

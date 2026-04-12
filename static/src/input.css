@@ -64,4 +64,6 @@
     opacity: 1;
     filter: grayscale(0);
   }
+
+  [x-cloak] { display: none !important; }
 }
