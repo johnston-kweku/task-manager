@@ -8,4 +8,5 @@ urlpatterns = [
     path('tasks/delete/<int:task_id>/', views.delete_task, name='delete_task'),
     path('tasks/create/', views.create_task, name='create_task'),
     path('tasks/update/<int:pk>/', views.update_task, name='update_task'),
+    path('tasks/deactivate/<int:task_id>/', views.deactivate_task, name='deactivate_task')
 ]

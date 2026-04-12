@@ -72,9 +72,23 @@ document.addEventListener('alpine:init', () => {
         if(!taskId) return;
 
         
-
-
         Alpine.store('menu').close()
+
+        if (action === 'restart') {
+        window.dispatchEvent(new CustomEvent('reinit-node', { 
+            detail: { taskId: taskId } 
+        }));
+
+        // Use Alpine.store instead of 'this'
+        const chronos = Alpine.store('chronos');
+        if (chronos.activeTask.id === taskId) {
+            chronos.activeTask.percent = 0;
+            chronos.activeTask.syncRate = "75.0"; 
+        }
+
+        Alpine.store('menu').close();
+        return; 
+    }
 
         if(action === 'pause') {
             window.dispatchEvent(new CustomEvent('toggle-active-pause'));
@@ -85,7 +99,8 @@ document.addEventListener('alpine:init', () => {
         const endpoints = {
             'activate':`/tasks/activate/${taskId}/`,
             'complete':`/tasks/complete/${taskId}/`,
-            'delete':`/tasks/delete/${taskId}/`
+            'delete':`/tasks/delete/${taskId}/`,
+            'deactivate':`/tasks/deactivate/${taskId}/`
         };
 
 
@@ -165,6 +180,64 @@ document.addEventListener('alpine:init', () => {
                 this.secondsLeft = data.left;
 
             }
+
+            // Use { once: false } or standard, but ensure the ID check is strict
+            window.addEventListener('reinit-node', (e) => {
+                // CRITICAL: If the ID doesn't match, we exit immediately 
+                // to prevent the feedback from playing in other task components.
+                if (e.detail.taskId !== taskId) return;
+
+                this.stop(); 
+                localStorage.removeItem(`task_${taskId}_progress`);
+
+                this.elapsedSeconds = 0;
+                this.secondsLeft = this.totalSeconds;
+                this.isActive = false;
+
+                this.updateStore();
+
+                // The Voice Synthesis (robust wrapper)
+                try {
+                    if (!('speechSynthesis' in window)) {
+                        console.warn('Speech synthesis not supported in this browser.');
+                    } else {
+                        const speakMsg = () => {
+                            const msg = new SpeechSynthesisUtterance('Node re-initiated. Progress Reset, Reactivate Neural Link');
+                            msg.rate = 0.8;
+                            msg.lang = 'en-US';
+
+                            const voices = window.speechSynthesis.getVoices();
+                            if (voices && voices.length) {
+                                // prefer a voice that matches language
+                                const voice = voices.find(v => v.lang && v.lang.startsWith('en')) || voices[0];
+                                if (voice) msg.voice = voice;
+                            }
+
+                            // Clear any existing queue so it doesn't overlap
+                            window.speechSynthesis.cancel();
+                            try {
+                                window.speechSynthesis.speak(msg);
+                            } catch (err) {
+                                console.error('speechSynthesis.speak failed:', err);
+                            }
+                        };
+
+                        // Some browsers populate voices asynchronously
+                        const voices = window.speechSynthesis.getVoices();
+                        if (!voices || voices.length === 0) {
+                            const onVoices = () => {
+                                speakMsg();
+                                window.speechSynthesis.removeEventListener('voiceschanged', onVoices);
+                            };
+                            window.speechSynthesis.addEventListener('voiceschanged', onVoices);
+                        } else {
+                            speakMsg();
+                        }
+                    }
+                } catch (err) {
+                    console.error('Speech synthesis error:', err);
+                }
+            }, { passive: true });
 
 
             window.addEventListener('toggle-active-pause', () => {

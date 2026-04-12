@@ -105,3 +105,14 @@ def update_task(request, pk):
     
     task.save()
     return JsonResponse({'status': 'success'})
+
+@require_POST
+def deactivate_task(request, task_id):
+    task = get_object_or_404(Task, id=task_id)
+    task.is_active = False
+
+    task.save()
+    return JsonResponse({
+        'status':'success',
+        'message':'Neural Link Severed'
+    })
