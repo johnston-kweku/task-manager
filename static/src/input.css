@@ -1,7 +1,33 @@
 @import "tailwindcss";
 
-/* If you need to configure Tailwind's content paths, update tailwind.config.js
-   rather than placing @source here. */
+   /* Custom Scrollbar for Chrome, Safari, and Edge */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(15, 23, 42, 0.9); /* slate-900 */
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(6, 182, 212, 0.2); /* cyan-500 with low opacity */
+    border-radius: 10px;
+    border: 1px solid rgba(6, 182, 212, 0.1);
+    transition: all 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(6, 182, 212, 0.5); /* Brighten on hover */
+    box-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
+}
+
+/* Firefox Support */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(6, 182, 212, 0.2) rgba(15, 23, 42, 0.9);
+}
+
 
 :root {
   --color-background: #10131a;
@@ -66,4 +92,19 @@
   }
 
   [x-cloak] { display: none !important; }
+
+
+
+  .glass-panel::before {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0; left: 0; bottom: 0; right: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+                linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+    z-index: 2;
+    background-size: 100% 4px, 3px 100%;
+    pointer-events: none;
+    opacity: 0.1;
+}
 }

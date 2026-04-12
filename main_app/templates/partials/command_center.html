@@ -1,3 +1,4 @@
+{% load static %}
 <div x-data class="w-full px-8 mt-10 flex items-center justify-between py-2">
     <div>
         <h1 class="text-gray-200 font-bold tracking-tighter text-3xl leading-relaxed">COMMAND_CENTER</h1>
@@ -72,15 +73,22 @@
     <!-- /.Focus Progress card -->
 
     <!-- Right column: Critical Missions -->
-    <div class="shadow-xl shadow-cyan-900 col-span-2 rounded-lg border border-cyan-500/20 p-6 bg-slate-900/40">
-        <h2 class="font-bold flex gap-2 text-cyan-400 mb-4 tracking-widest">
+    <div class="shadow-xl shadow-cyan-900 col-span-2 rounded-lg border border-cyan-500/20 p-6 bg-slate-900/40 flex flex-col h-96 my-auto max-h-96 min-h-0">
+        <h2 class="font-bold flex gap-2 text-cyan-400 mb-4 tracking-widest shrink-0">
             <svg class="w-6 h-6" viewBox="0 0 60.601004 60.601004" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <title>津波注意（津波危険地帯）; Warning Tsunami hazard zone</title> <defs></defs> <metadata> <rdf:rdf> <cc:work rdf:about=""> <dc:format>image/svg+xml</dc:format> <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"></dc:type> <dc:title>津波注意（津波危険地帯）; Warning Tsunami hazard zone</dc:title> <dc:source>http://www.ecomo.or.jp/barrierfree/pictogram/data/zukigo_panfu_jis110.pdf</dc:source> </cc:work> </rdf:rdf> </metadata> <path d="m 57.316128,56.958628 c 1.125,0 2.225,-0.5825 2.825,-1.63125 0.6125,-1.04625 0.5625,-2.28875 0,-3.265 L 33.128628,5.2773777 c -0.5625,-0.97375 -1.6125,-1.635 -2.8375,-1.635 -1.2,0.0025 -2.25,0.66125 -2.8125,1.635 L 0.46612771,52.062378 c -0.575,0.97625 -0.6125,2.21875 -0.0125,3.265 0.61249999,1.04875 1.69999999,1.63125 2.83749999,1.63125 l 54.0250003,0" style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"></path> <path d="m 30.291127,9.0848757 -13.85,23.9900003 c 14.9125,-7.8575 22.4375,-2.24875 24.7875,3.58875 l -0.4625,0.26625 c -0.3625,-0.3475 -0.775,-0.65625-1.2375,-0.935 -3.1125,-1.86375 -6.9375,-1.21 -8.55,1.46625 -1.6125,2.685 -0.3875,6.37375 2.725,8.24125 6.1375,3.68625 13.975,2.81 18.725,1.71125 L 30.291127,9.0848757" style="fill:#f2e700;fill-opacity:1;fill-rule:evenodd;stroke:none"></path> </g></svg>
             <p class="text-glow">CRITICAL MISSIONS</p>
         </h2>
 
-        <div class="space-y-4">
+        <div class="space-y-4 flex-1 overflow-y-auto pr-2 custom-scrollbar">
             {% for task in tasks %}
                 <div x-data="taskTimer({{ task.duration.total_seconds }}, {{task.id}})"
+                @dblclick="$store.taskDetail.open({
+                    id: {{task.id}},
+                    name:'{{task.name|escapejs}}',
+                    description:'{{task.description|escapejs}}',
+                    priority:'{{task.priority_level}}',
+                    duration:'{{task.duration}}'
+                })"
                 @contextmenu="$store.menu.open($event, {{task.id}})"
                     x-init="
                         priority = '{{ task.priority_level|upper }}'; 
@@ -157,7 +165,7 @@
 </div>
 
 
-<div x-data x-show="$store.modal.on" 
+<div x-data="{priority: 'GHOST_PROTOCOL'}" x-show="$store.modal.on" 
      x-transition:enter="transition ease-out duration-300"
      x-transition:enter-start="opacity-0"
      x-transition:enter-end="opacity-100"
@@ -191,7 +199,11 @@
 
                 <div>
                     <label class="block text-[10px] text-gray-500 tracking-widest uppercase mb-2">Threat Level</label>
-                    <select name="priority_level" class="w-full bg-slate-950 border border-cyan-500/10 rounded px-4 py-3 text-white focus:border-cyan-400 outline-none appearance-none cursor-pointer">
+                    <select x-model="priority" name="priority_level" class="w-full bg-slate-950 border border-cyan-500/10 rounded px-4 py-3 text-white focus:border-cyan-400 outline-none appearance-none cursor-pointer"
+                                :class="{
+                'border-red-500 shadow-[0_0_10px_rgba(239,68,68,0.2)]': priority === 'THREAT_LEVEL_RED',
+                'border-cyan-500/10 focus:border-cyan-400': priority !== 'THREAT_LEVEL_RED'
+            }">
                         <option value="GHOST_PROTOCOL">GHOST_PROTOCOL</option>
                         <option value="NODE_VALIDATION">NODE_VALIDATION</option>
                         <option value="THREAT_LEVEL_RED">THREAT_LEVEL_RED</option>
@@ -204,9 +216,97 @@
                 <textarea name="description" rows="3" class="w-full bg-slate-950 border border-cyan-500/10 rounded px-4 py-3 text-white focus:border-cyan-400 outline-none resize-none"></textarea>
             </div>
 
-            <button type="submit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-black py-4 rounded tracking-[0.3em] text-[10px] transition-all transform active:scale-[0.98] shadow-lg shadow-cyan-900/20">
+            <button type="submit" 
+                    class="w-full font-black py-4 rounded tracking-[0.3em] text-[10px] transition-all transform active:scale-[0.98]"
+                    :class="priority === 'THREAT_LEVEL_RED' ? 'bg-red-600 hover:bg-red-500 text-white' : 'bg-cyan-600 hover:bg-cyan-500 text-slate-950'">
                 UPLOAD_TO_CORE
             </button>
         </form>
     </div>
+</div>
+
+<div x-data="{ isEditing: false }" 
+     x-show="$store.taskDetail.on" 
+     @keydown.escape.window="$store.taskDetail.close()"
+     class="fixed inset-0 z-110 flex items-center justify-center p-6" x-cloak>
+    
+    <div @click="$store.taskDetail.close()" class="absolute inset-0 bg-slate-950/90 backdrop-blur-xl"></div>
+    
+    <div class="relative w-full max-w-2xl bg-slate-900 border rounded-lg overflow-hidden shadow-[0_0_100px_rgba(0,0,0,0.8)]"
+         :class="$store.taskDetail.task.priority === 'THREAT_LEVEL_RED' ? 'border-red-500/50' : 'border-cyan-500/30'">
+        
+        <div class="px-6 py-3 border-b flex justify-between items-center bg-white/5"
+             :class="$store.taskDetail.task.priority === 'THREAT_LEVEL_RED' ? 'border-red-500/20' : 'border-cyan-500/20'">
+            <div class="flex items-center gap-3">
+                <div class="w-2 h-2 animate-pulse rounded-full" 
+                     :class="$store.taskDetail.task.priority === 'THREAT_LEVEL_RED' ? 'bg-red-500' : 'bg-cyan-500'"></div>
+                <h2 class="text-[10px] font-bold tracking-[0.4em] text-gray-400">DATA_ENCRYPTION_LAYER_v2.0</h2>
+            </div>
+            <button @click="$store.taskDetail.close()" class="text-gray-500 hover:text-white transition-colors text-[10px] uppercase tracking-widest">[ Close ]</button>
+        </div>
+
+        <div class="p-8">
+            <div class="mb-8">
+                <span class="text-[10px] text-cyan-500/50 tracking-[0.3em] uppercase">Project_Node</span>
+                <template x-if="!isEditing">
+                    <h1 x-text="$store.taskDetail.task.name" class="text-3xl font-black text-white tracking-tighter mt-1 uppercase italic"></h1>
+                </template>
+                <template x-if="isEditing">
+                    <input type="text" x-model="$store.taskDetail.task.name" 
+                           class="w-full bg-slate-950 border border-cyan-500/30 text-3xl font-black text-cyan-400 p-2 mt-1 outline-none">
+                </template>
+            </div>
+
+            <div class="relative bg-slate-950 p-6 border border-white/5 rounded min-h-37.5">
+                <p class="text-[9px] text-gray-600 tracking-widest mb-4">MISSION_PARAMETERS:</p>
+                <template x-if="!isEditing">
+                    <p x-text="$store.taskDetail.task.description" class="text-gray-300 font-mono text-sm leading-relaxed"></p>
+                </template>
+                <template x-if="isEditing">
+                    <textarea x-model="$store.taskDetail.task.description" 
+                              class="w-full bg-transparent text-cyan-400 font-mono text-sm outline-none border-b border-cyan-500/20 focus:border-cyan-500" rows="5"></textarea>
+                </template>
+            </div>
+        </div>
+
+        <div class="px-8 py-4 bg-white/5 border-t border-white/5 flex justify-between">
+            <button x-show="!isEditing" @click="isEditing = true" class="text-[10px] text-cyan-500 hover:text-cyan-300 tracking-widest uppercase">
+                [ Modify_Intel ]
+            </button>
+            <div class="flex gap-4">
+                <button x-show="isEditing" @click="$store.taskDetail.save()" 
+                        class="px-6 py-2 bg-cyan-600 text-slate-950 text-[10px] font-bold tracking-widest hover:bg-cyan-400 transition-all">
+                    SYNC_CHANGES
+                </button>
+                <button @click="$store.taskDetail.close()" class="px-6 py-2 border border-gray-700 text-[10px] text-gray-500 hover:text-white tracking-widest">
+                    <span x-text="isEditing ? 'ABORT' : 'CLOSE'"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div x-data="{ 
+    playGreeting() {
+        // 1. Check if we've already played the sound
+        if (localStorage.getItem('chronos_booted')) return;
+
+        const audio = new Audio('{% static 'assets/audio/welcome.mp3' %}');
+        audio.volume = 1;
+        
+        audio.play().then(() => {
+            // 2. Mark as played so it won't trigger again on next reload
+            localStorage.setItem('chronos_booted', 'true');
+        }).catch(error => {
+            // Wait for first interaction if blocked
+            window.addEventListener('click', () => {
+                if (!localStorage.getItem('chronos_booted')) {
+                    audio.play();
+                    localStorage.setItem('chronos_booted', 'true');
+                }
+            }, { once: true });
+        });
+    }
+}" x-init="playGreeting()">
 </div>

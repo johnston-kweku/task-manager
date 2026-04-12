@@ -7,7 +7,7 @@
     <title>Document</title>
     <link rel="stylesheet" href="{% static 'css/output.css' %}">
 </head>
-<body  class="font-mono bg-slate-950 bg-grid-pattern relative">
+<body  class="font-mono bg-slate-950 bg-grid-pattern select-none relative">
     {% csrf_token %}
     <nav class="bg-slate-900/40 glass-panel backdrop-blur-md w-full shadow-lg flex items-center justify-between shadow-sky-500 fixed top-0 left-0 p-4">
         <div class="flex gap-8">
@@ -20,7 +20,7 @@
         </div>
 
         <div class="flex gap-5 *:cursor-pointer *:w-6 *:h-6 *:active:scale-95">
-            <svg class="fill-gray-500 stroke-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <svg x-data @click="localStorage.removeItem('chronos_booted')" class="fill-gray-500 stroke-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
             </svg>
 

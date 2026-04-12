@@ -6,6 +6,53 @@ window.Alpine = Alpine;
 
 document.addEventListener('alpine:init', () => {
 
+
+    Alpine.store('taskDetail', {
+        on:false,
+        isEditing:false,
+        task: {
+            id:null,
+            name:'',
+            description:'',
+            priority:'',
+            duration:''
+        },
+        open(taskData) {
+            this.task = { ...taskData };
+            this.on = true
+            this.isEditing = false
+        },
+        close() {
+            this.on = false
+        },
+
+
+        async save() {
+            if(!this.task.id) {
+                console.error('Critical Error: Node ID missing from memory.')
+                return;
+            }
+            try {
+                const response = await fetch(`/tasks/update/${this.task.id}/`, {
+                    method:'POST',
+                    headers:{
+                        'X-CSRFToken':document.querySelector('[name=csrfmiddlewaretoken]').value,
+                        'Content-Type':'spplication/json'
+                    },
+                    body:JSON.stringify(this.task)
+                });
+
+                if(response.ok) {
+                    window.location.reload()
+                    this.isEditing = false;
+                    this.on = false
+                }
+            }catch(error) {
+                console.error('Synchronization failure: ',error)
+            }
+        }
+    })
+
     Alpine.store('modal', {
             on: false,
             open() { this.on = true },
@@ -118,6 +165,7 @@ document.addEventListener('alpine:init', () => {
                 this.secondsLeft = data.left;
 
             }
+
 
             window.addEventListener('toggle-active-pause', () => {
             if(this.isActive) {

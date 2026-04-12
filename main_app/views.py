@@ -5,7 +5,7 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from datetime import timedelta
-
+import json
 
 # Create your views here.
 
@@ -93,3 +93,15 @@ def create_task(request):
             description=description
         )
         return redirect('home') # or wherever your main view
+
+@require_POST
+def update_task(request, pk):
+    data = json.loads(request.body)
+    task = Task.objects.get(pk=pk)
+    
+    task.name = data.get('name', task.name)
+    task.description = data.get('description', task.description)
+
+    
+    task.save()
+    return JsonResponse({'status': 'success'})
