@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="{% static 'css/output.css' %}">
+
 </head>
 <body  class="font-mono bg-slate-950 bg-grid-pattern select-none relative">
     {% csrf_token %}
@@ -43,12 +44,14 @@
             </p>
         </div>
 
-        <div class="flex flex-col items-start justify-center *:w-full *:p-4   *:cursor-pointer *:active:scale-95 *:hover:bg-slate-900 text-xs text-gray-600 text-left text-shadow-cyan-700">
-            <button class="flex gap-2 items-center {% if request.resolver_match.url_name == 'home' %}shadow-[inset_10px_0_15px_-10px_rgba(0,242,255,0.3)] border-l-3 border-cyan-500 text-cyan-400 bg-cyan-950/80 shadow-sky-600 {% endif %}">
+        <div x-init class="flex flex-col items-start justify-center *:w-full *:p-4   *:cursor-pointer *:active:scale-95 *:hover:bg-slate-900 text-xs text-gray-600 text-left text-shadow-cyan-700">
+            <button @click="fetchPage('commandCenter')" class="flex gap-2 items-center"
+            :class="page === 'commandCenter' ? border-l-2 border-cyan-400 bg-cyan-900">
                 <img src="{% static 'assets/images/dashboard.svg'%}" class="w-4 h-4">
                 COMMAND CENTER
             </button>
-            <button class=" flex gap-2 items-center">
+            <button @click="fetchPage('taskNebula'); setActivePage('taskNebula')" class=" flex gap-2 items-center"
+            :class="page === 'taskNebula' ? border-l-2 border-cyan-400 bg-cyan-900">
                 <img src="{% static 'assets/images/bubble.png'%}" class="w-4 h-4" alt="">
                 TASK NEBULA
             </button>

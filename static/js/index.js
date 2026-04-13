@@ -7,6 +7,61 @@ window.Alpine = Alpine;
 document.addEventListener('alpine:init', () => {
 
 
+    Alpine.store('pageName', {
+        page:'',
+
+        setActivePage(pageName) {
+            this.page = pageName
+        }
+    })
+
+
+    window.fetchPage = async (page, pushToHistory = true) => {
+        const url = `/fetch/page/${page}/`;
+        const displayUrl = `/${page}/`;
+        const mainContainer = document.getElementById('main-container');
+
+        try {
+            const response = await fetch(url);
+            if (response.ok) {
+                const htmlContent = await response.text();
+
+                if (pushToHistory) {
+                    history.pushState({ page: page }, page.toUpperCase(), displayUrl);
+                }
+
+
+                mainContainer.style.opacity = '0';
+                setTimeout(() => {
+                    mainContainer.innerHTML = htmlContent;
+                    mainContainer.style.opacity = '1';
+
+
+                    Alpine.discoverUninitializedComponents((el) => {
+                        Alpine.initializeComponent(el);
+                    });
+                    
+                    console.log(`WARP_SUCCESS: Entered ${page} sector.`);
+                }, 150);
+            }
+        } catch (error) {
+            console.error("LINK_SEVERED: Uplink failure.");
+        }
+    };
+
+
+
+
+    window.addEventListener('popstate', (event) => {
+        if (event.state && event.state.page) {
+
+            window.fetchPage(event.state.page, false);
+        } else {
+            location.reload(); 
+        }
+    });
+
+
     Alpine.store('taskDetail', {
         on:false,
         isEditing:false,
@@ -25,7 +80,7 @@ document.addEventListener('alpine:init', () => {
         close() {
             this.on = false
         },
-
+        
 
         async save() {
             if(!this.task.id) {
@@ -74,6 +129,38 @@ document.addEventListener('alpine:init', () => {
         
         Alpine.store('menu').close()
 
+        if(action === 'deactivate') {
+            const msg = new SpeechSynthesisUtterance('Node servered successfully.')
+            msg.rate = 0.8
+            window.speechSynthesis.cancel()
+            window.speechSynthesis.speak(msg)
+        }
+
+        if(action === 'delete') {
+            const msg = new SpeechSynthesisUtterance('Node terminated successfully.')
+            msg.rate = 0.8
+            window.speechSynthesis.cancel()
+            window.speechSynthesis.speak(msg)
+        }
+        if(action === 'pause') {
+            const msg = new SpeechSynthesisUtterance('Node Halt.')
+            msg.rate = 0.8
+            window.speechSynthesis.cancel()
+            window.speechSynthesis.speak(msg)
+        }
+        if(action === 'complete') {
+            const msg = new SpeechSynthesisUtterance('Node Complete, Removing from log.')
+            msg.rate = 0.8
+            window.speechSynthesis.cancel();
+            window.speechSynthesis.speak(msg)
+        }
+
+        if(action === 'activate') {
+            const msg = new SpeechSynthesisUtterance('Node Initiated successfully.')
+            msg.rate = 0.8;
+            window.speechSynthesis.cancel()
+            window.speechSynthesis.speak(msg)
+        }
         if (action === 'restart') {
         window.dispatchEvent(new CustomEvent('reinit-node', { 
             detail: { taskId: taskId } 
@@ -171,6 +258,7 @@ document.addEventListener('alpine:init', () => {
         isRunning: false,
         isActive: false,
         priority: '',
+        startTime:null,
 
         init() {
             const saved = localStorage.getItem(`task_${taskId}_progress`);
@@ -181,10 +269,16 @@ document.addEventListener('alpine:init', () => {
 
             }
 
-            // Use { once: false } or standard, but ensure the ID check is strict
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'visible' && this.isRunning) {
+                    this.syncTime();
+                    console.log("RE-LINKED: Temporal drift corrected.");
+                }
+            });
+
+
             window.addEventListener('reinit-node', (e) => {
-                // CRITICAL: If the ID doesn't match, we exit immediately 
-                // to prevent the feedback from playing in other task components.
+
                 if (e.detail.taskId !== taskId) return;
 
                 this.stop(); 
@@ -271,22 +365,39 @@ document.addEventListener('alpine:init', () => {
         },
 
 
+
+
         start() {
-            if (this.isRunning) return;
-            if (this.secondsLeft <= 0) return;
+            if (this.isRunning || this.secondsLeft <= 0) return;
+            
             this.isRunning = true;
+            // Record the exact timestamp when we hit start
+            this.startTime = Date.now(); 
 
             this.timerInterval = setInterval(() => {
-                if (this.secondsLeft > 0) this.secondsLeft--;
-
-                this.elapsedSeconds++;
-
-                if(this.elapsedSeconds % 5 === 0) this.persist();
-
-                if (this.isActive) {
-                    this.updateStore()
-                }
+                this.syncTime();
             }, 1000);
+        },
+
+        syncTime() {
+            if (!this.isRunning) return;
+
+            const now = Date.now();
+
+            const delta = Math.floor((now - this.startTime) / 1000);
+            
+            if (delta >= 1) {
+                this.secondsLeft -= delta;
+                this.elapsedSeconds += delta;
+                this.startTime = now; 
+                
+                if (this.secondsLeft <= 0) {
+                    this.secondsLeft = 0;
+                    this.stop();
+                }
+                
+                this.updateStore();
+            }
         },
 
 
@@ -368,8 +479,8 @@ document.addEventListener('alpine:init', () => {
             this.resume();
         }
         
+    },
 
-    }
     
     }))
 })

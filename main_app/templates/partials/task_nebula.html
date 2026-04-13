@@ -1,0 +1,36 @@
+<div style="width: 400px; height: 400px;">
+    <canvas id="myFirstCanvas"></canvas>
+</div>
+
+<script>
+    const ctx = document.getElementById('myFirstCanvas').getContext('2d');
+
+const myChart = new Chart(ctx, { // Added the missing comma here
+    type: 'doughnut',
+    data: {
+        labels: ['Completed', 'Pending', 'Overdue'],
+        datasets: [{
+            label: 'Task Status',
+            data: [12, 19, 3], // The numbers for your segments
+            backgroundColor: [
+                '#00f2ff', // Neon Cyan
+                '#6366f1', // Indigo
+                '#f43f5e'  
+            ],
+            borderColor: '#0f172a', // Dark border to match your bg
+            borderWidth: 2,
+            hoverOffset: 15 // Pops out when you hover
+        }]
+    },
+    options: {
+        cutout: '80%', // This creates the "Ring" look instead of a solid pie
+        plugins: {
+            legend: {
+                display: true,
+                position: 'bottom',
+                labels: { color: '#94a3b8' } // Slate text
+            }
+        }
+    }
+});
+</script>

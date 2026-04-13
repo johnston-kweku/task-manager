@@ -2,14 +2,15 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Count
 from .models import Task
 from django.http import JsonResponse
-from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
+from django.template.loader import render_to_string
+from django.http import HttpResponse, Http404
 from datetime import timedelta
 import json
 
 # Create your views here.
 
-def home(request):
+def command_center_view(request):
     tasks = Task.objects.filter(completed=False)
 
     completed_tasks = Task.objects.filter(completed=True).count()
@@ -116,3 +117,46 @@ def deactivate_task(request, task_id):
         'status':'success',
         'message':'Neural Link Severed'
     })
+
+
+def fetch_page(request, page_name):
+    templates = {
+        'commandCenter': 'partials/command_center.html',
+        'taskNebula': 'partials/task_nebula.html'
+    }
+
+    template_path = templates.get(page_name)
+    if not template_path:
+        return HttpResponse("Sector Invalid", status=404)
+
+
+    context = get_dashboard_context()
+
+
+    html = render_to_string(template_path, context, request=request)
+    return HttpResponse(html)
+
+
+
+def get_dashboard_context():
+    tasks = Task.objects.filter(completed=False).order_by('-priority_level')
+    total = Task.objects.count()
+    completed = Task.objects.filter(completed=True).count()
+    sync_rate = round((completed / total * 100), 1) if total > 0 else 0
+    
+    return {
+        'tasks': tasks,
+        'sync_rate': sync_rate,
+        'active_task': Task.objects.filter(is_active=True).first()
+    }
+
+# This handles initial page loads/refreshes
+def command_center_view(request):
+    context = get_dashboard_context()
+    context['initial_page'] = 'partials/command_center.html'
+    return render(request, 'main_app/index.html', context)
+
+def task_nebula_view(request):
+    context = get_dashboard_context()
+    context['initial_page'] = 'main_app/partials/task_nebula.html'
+    return render(request, 'main_app/index.html', context)
