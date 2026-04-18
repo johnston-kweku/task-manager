@@ -1,36 +1,71 @@
-<div style="width: 400px; height: 400px;">
-    <canvas id="myFirstCanvas"></canvas>
-</div>
-
-<script>
-    const ctx = document.getElementById('myFirstCanvas').getContext('2d');
-
-const myChart = new Chart(ctx, { // Added the missing comma here
-    type: 'doughnut',
-    data: {
-        labels: ['Completed', 'Pending', 'Overdue'],
-        datasets: [{
-            label: 'Task Status',
-            data: [12, 19, 3], // The numbers for your segments
-            backgroundColor: [
-                '#00f2ff', // Neon Cyan
-                '#6366f1', // Indigo
-                '#f43f5e'  
-            ],
-            borderColor: '#0f172a', // Dark border to match your bg
-            borderWidth: 2,
-            hoverOffset: 15 // Pops out when you hover
-        }]
+<div class="w-full px-8 mt-10" x-data="{
+    init() {
+        this.renderChart();
     },
-    options: {
-        cutout: '80%', // This creates the "Ring" look instead of a solid pie
-        plugins: {
-            legend: {
-                display: true,
-                position: 'bottom',
-                labels: { color: '#94a3b8' } // Slate text
+    renderChart() {
+        const ctx = document.getElementById('taskStatusChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Completed', 'Pending', 'Active'],
+                datasets: [{
+                    label: 'SYSTEM_STATUS',
+                    data: [{{ completed_count }}, {{ pending_count }}, {{ active_task|yesno:"1,0" }}],
+                    backgroundColor: [
+                        'rgba(0, 242, 255, 0.8)', // Neon Cyan
+                        'rgba(99, 102, 241, 0.8)', // Indigo
+                        'rgba(244, 63, 94, 0.8)'   // Pink/Red
+                    ],
+                    borderColor: '#0f172a',
+                    borderWidth: 2,
+                    hoverOffset: 15
+                }]
+            },
+            options: {
+                cutout: '80%',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'bottom',
+                        labels: { 
+                            color: '#94a3b8',
+                            font: {
+                                family: 'monospace',
+                                size: 10
+                            }
+                        }
+                    }
+                }
             }
-        }
+        });
     }
-});
-</script>
+}">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="glass-panel p-6 rounded-lg border border-cyan-500/30">
+            <h2 class="text-cyan-400 font-bold tracking-[0.2em] text-xs mb-6 uppercase">Neural_Network_Metrics</h2>
+            <div style="height: 300px; position: relative;">
+                <canvas id="taskStatusChart"></canvas>
+            </div>
+        </div>
+
+        <div class="glass-panel p-6 rounded-lg border border-cyan-500/30">
+            <h2 class="text-cyan-400 font-bold tracking-[0.2em] text-xs mb-6 uppercase">System_Sync_Diagnostics</h2>
+            <div class="space-y-4">
+                <div class="flex justify-between items-center border-b border-white/5 pb-2">
+                    <span class="text-gray-500 text-[10px] tracking-widest uppercase">Sync Rate</span>
+                    <span class="text-cyan-400 font-bold">{{ sync_rate }}%</span>
+                </div>
+                <div class="flex justify-between items-center border-b border-white/5 pb-2">
+                    <span class="text-gray-500 text-[10px] tracking-widest uppercase">Active Nodes</span>
+                    <span class="text-cyan-400 font-bold">{{ tasks|length }}</span>
+                </div>
+                 <div class="flex justify-between items-center border-b border-white/5 pb-2">
+                    <span class="text-gray-500 text-[10px] tracking-widest uppercase">Uptime</span>
+                    <span class="text-cyan-400 font-bold">99.99%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

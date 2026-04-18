@@ -12,6 +12,8 @@ urlpatterns = [
     path('fetch/page/<str:page_name>/', views.fetch_page, name='fetch_page'),
     path('commandCenter/', views.command_center_view, name='command_center'),
     path('taskNebula/', views.task_nebula_view, name='task_nebula'),
+    path('focusChamber/', views.focus_chamber_view, name='focus_chamber'),
+    path('timelineMatrix/', views.timeline_matrix_view, name='timeline_matrix'),
 
     path('fetch/page/<str:page_name>/', views.fetch_page, name='fetch_page'),
 ]

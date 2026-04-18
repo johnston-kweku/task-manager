@@ -4,78 +4,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <meta name="description" content="NEURAL COMMAND: A futuristic, cyberpunk-themed task management system with real-time neural synchronization.">
+    <title>NEURAL COMMAND - {{ initial_page_name|default:'HQ' }}</title>
     <link rel="stylesheet" href="{% static 'css/output.css' %}">
-
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        [x-cloak] { display: none !important; }
+        @media (max-width: 768px) {
+            .sidebar-closed { transform: translateX(-100%); }
+            .main-content-full { margin-left: 0 !important; width: 100% !important; }
+        }
+    </style>
 </head>
-<body  class="font-mono bg-slate-950 bg-grid-pattern select-none relative">
+<body class="font-mono bg-slate-950 bg-grid-pattern select-none relative" 
+      x-data="{ mobileMenu: false }" 
+      x-init="$store.pageName.setActivePage('{{ initial_page_name|default:'commandCenter' }}')">
+    
     {% csrf_token %}
-    <nav class="bg-slate-900/40 glass-panel backdrop-blur-md w-full shadow-lg flex items-center justify-between shadow-sky-500 fixed top-0 left-0 p-4">
-        <div class="flex gap-8">
-            <p class="text-cyan-300 text-glow text-xl shadow-lg w-fit font-bold">
+    
+    <!-- Top Nav -->
+    <nav class="bg-slate-900/60 glass-panel backdrop-blur-md w-full shadow-lg flex items-center justify-between shadow-sky-500/20 fixed top-0 left-0 p-4 z-[100]">
+        <div class="flex items-center gap-4">
+            <!-- Mobile Toggle -->
+            <button @click="mobileMenu = !mobileMenu" class="md:hidden text-cyan-400 p-1 border border-cyan-500/30 rounded">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>
+            <p class="text-cyan-300 text-glow text-xl font-bold tracking-tighter cursor-pointer" @click="fetchPage('commandCenter')">
                 NEURAL COMMAND
             </p>
-
-            <input type="search" placeholder="QUERY SYSTEM..." class="bg-slate-800 border text-sm text-gray-500 px-3 shadow-sky-500 border-sky-500 rounded relative">
-
         </div>
 
-        <div class="flex gap-5 *:cursor-pointer *:w-6 *:h-6 *:active:scale-95">
-            <svg x-data @click="localStorage.removeItem('chronos_booted')" class="fill-gray-500 stroke-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
-            </svg>
+        <div class="hidden md:flex flex-1 max-w-md mx-10">
+            <input type="search" placeholder="QUERY_CORE..." class="w-full bg-slate-800/50 border border-sky-500/30 text-xs text-cyan-100 px-4 py-1.5 rounded focus:border-cyan-400 outline-none transition-all">
+        </div>
 
-            <svg class="stroke-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z" />
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+        <div class="flex gap-4 *:cursor-pointer *:w-5 *:h-5">
+             <svg @click="localStorage.removeItem('chronos_booted'); location.reload()" class="stroke-gray-500 hover:stroke-cyan-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
             </svg>
-
+            <svg class="stroke-gray-500 hover:stroke-cyan-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+            </svg>
         </div>
     </nav>
 
-    <!-- Side bar -->
-    <aside class="w-2/12 h-full z-40 border-r fixed bg-slate-900/40 backdrop-blur-md top-16 left-0 border-cyan-400 flex flex-col">
-        <div  class="w-full mb-10 pt-10 mx-auto flex flex-col items-center justify-center">
-            <p class="text-xl text-cyan-500 font-bold ">
-                NEURAL OS
-            </p>
-            <p x-data="{number: {{tasks}}}" class="text-gray-500 text-sm">
-                ACTIVE SESSION: <span x-text="number"></span>
-            </p>
+    <!-- Sidebar / Mobile Nav -->
+    <aside :class="mobileMenu ? 'translate-x-0' : 'sidebar-closed md:translate-x-0'" 
+           class="w-64 md:w-2/12 h-full z-[90] border-r fixed bg-slate-900/90 backdrop-blur-xl top-16 left-0 border-cyan-500/20 flex flex-col transition-transform duration-300 ease-in-out">
+        
+        <div class="w-full mb-6 pt-10 px-6 flex flex-col cursor-pointer group" @click="fetchPage('commandCenter'); mobileMenu = false">
+            <p class="text-xs text-cyan-500/50 tracking-[0.4em] uppercase mb-1">System_Status</p>
+            <p class="text-lg text-cyan-400 font-black group-hover:text-white transition-colors">NEURAL_OS_v4.2</p>
+            <div class="w-full h-0.5 bg-cyan-900 mt-2 overflow-hidden">
+                <div class="h-full bg-cyan-500 animate-[pulse_2s_infinite]"></div>
+            </div>
         </div>
 
-        <div x-init class="flex flex-col items-start justify-center *:w-full *:p-4   *:cursor-pointer *:active:scale-95 *:hover:bg-slate-900 text-xs text-gray-600 text-left text-shadow-cyan-700">
-            <button @click="fetchPage('commandCenter')" class="flex gap-2 items-center"
-            :class="page === 'commandCenter' ? border-l-2 border-cyan-400 bg-cyan-900">
-                <img src="{% static 'assets/images/dashboard.svg'%}" class="w-4 h-4">
-                COMMAND CENTER
-            </button>
-            <button @click="fetchPage('taskNebula'); setActivePage('taskNebula')" class=" flex gap-2 items-center"
-            :class="page === 'taskNebula' ? border-l-2 border-cyan-400 bg-cyan-900">
-                <img src="{% static 'assets/images/bubble.png'%}" class="w-4 h-4" alt="">
-                TASK NEBULA
-            </button>
-            <button class="flex gap-2 items-center">
-                <svg class="w-4 h-4" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> 
-                <title>focus_point [#f40bba]</title> <desc>Created with Sketch.</desc> <defs> </defs> 
-                <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"> 
-                <g id="Dribbble-Light-Preview" transform="translate(-180.000000, -4439.000000)" fill="#309cc0"> 
-                <g id="icons" transform="translate(56.000000, 160.000000)"> <path d="M136,4290.0016 L136,4287.9986 C136,4287.4466 135.553,4286.9996 135.002,4286.9996 L132.998,4286.9996 C132.447,4286.9996 132,4287.4466 132,4287.9986 L132,4290.0016 C132,4290.5526 132.447,4290.9996 132.998,4290.9996 L135.002,4290.9996 C135.553,4290.9996 136,4290.5526 136,4290.0016 L136,4290.0016 Z M136,4292.9996 L135,4292.9996 L135,4293.9996 C135,4294.5526 134.552,4294.9996 134,4294.9996 C133.448,4294.9996 133,4294.5526 133,4293.9996 L133,4292.9996 L132,4292.9996 C130.895,4292.9996 130,4292.1046 130,4290.9996 L130,4289.9996 L129,4289.9996 C128.448,4289.9996 128,4289.5526 128,4288.9996 C128,4288.4476 128.448,4287.9996 129,4287.9996 L130,4287.9996 L130,4286.9996 C130,4285.8956 130.895,4284.9996 132,4284.9996 L133,4284.9996 L133,4283.9996 C133,4283.4476 133.448,4282.9996 134,4282.9996 C134.552,4282.9996 135,4283.4476 135,4283.9996 L135,4284.9996 L136,4284.9996 C137.105,4284.9996 138,4285.8956 138,4286.9996 L138,4287.9996 L139,4287.9996 C139.552,4287.9996 140,4288.4476 140,4288.9996 C140,4289.5526 139.552,4289.9996 139,4289.9996 L138,4289.9996 L138,4290.9996 C138,4292.1046 137.105,4292.9996 136,4292.9996 L136,4292.9996 Z M142,4278.9996 L137,4278.9996 C136.448,4278.9996 136,4279.4476 136,4279.9996 C136,4280.5526 136.448,4280.9996 137,4280.9996 L141,4280.9996 C141.552,4280.9996 142,4281.4476 142,4281.9996 L142,4285.9996 C142,4286.5526 142.448,4286.9996 143,4286.9996 C143.552,4286.9996 144,4286.5526 144,4285.9996 L144,4280.9996 C144,4279.8956 143.105,4278.9996 142,4278.9996 L142,4278.9996 Z M143,4290.9996 C142.448,4290.9996 142,4291.4476 142,4291.9996 L142,4295.9996 C142,4296.5526 141.552,4296.9996 141,4296.9996 L137,4296.9996 C136.448,4296.9996 136,4297.4476 136,4297.9996 C136,4298.5526 136.448,4298.9996 137,4298.9996 L142,4298.9996 C143.105,4298.9996 144,4298.1046 144,4296.9996 L144,4291.9996 C144,4291.4476 143.552,4290.9996 143,4290.9996 L143,4290.9996 Z M131,4296.9996 L127,4296.9996 C126.448,4296.9996 126,4296.5526 126,4295.9996 L126,4291.9996 C126,4291.4476 125.552,4290.9996 125,4290.9996 C124.448,4290.9996 124,4291.4476 124,4291.9996 L124,4296.9996 C124,4298.1046 124.895,4298.9996 126,4298.9996 L131,4298.9996 C131.552,4298.9996 132,4298.5526 132,4297.9996 C132,4297.4476 131.552,4296.9996 131,4296.9996 L131,4296.9996 Z M125,4286.9996 C125.552,4286.9996 126,4286.5526 126,4285.9996 L126,4281.9996 C126,4281.4476 126.448,4280.9996 127,4280.9996 L131,4280.9996 C131.552,4280.9996 132,4280.5526 132,4279.9996 C132,4279.4476 131.552,4278.9996 131,4278.9996 L126,4278.9996 C124.895,4278.9996 124,4279.8956 124,4280.9996 L124,4285.9996 C124,4286.5526 124.448,4286.9996 125,4286.9996 L125,4286.9996 Z M124.01,4288.9996 L124,4289.0096 L124,4288.9906 L124.01,4288.9996 Z" id="focus_point-[#f40bba]"> </path> </g> </g> </g> </g></svg>
-                FOCUS CHAMBER
-            </button>
-            <button class="flex gap-2 items-center">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M8 1C9.65685 1 11 2.34315 11 4V8C11 9.65685 9.65685 11 8 11H4C2.34315 11 1 9.65685 1 8V4C1 2.34315 2.34315 1 4 1H8ZM8 3C8.55228 3 9 3.44772 9 4V8C9 8.55228 8.55228 9 8 9H4C3.44772 9 3 8.55228 3 8V4C3 3.44772 3.44772 3 4 3H8Z" fill="#28afac"></path> <path fill-rule="evenodd" clip-rule="evenodd" d="M8 13C9.65685 13 11 14.3431 11 16V20C11 21.6569 9.65685 23 8 23H4C2.34315 23 1 21.6569 1 20V16C1 14.3431 2.34315 13 4 13H8ZM8 15C8.55228 15 9 15.4477 9 16V20C9 20.5523 8.55228 21 8 21H4C3.44772 21 3 20.5523 3 20V16C3 15.4477 3.44772 15 4 15H8Z" fill="#28afac"></path> <path fill-rule="evenodd" clip-rule="evenodd" d="M23 4C23 2.34315 21.6569 1 20 1H16C14.3431 1 13 2.34315 13 4V8C13 9.65685 14.3431 11 16 11H20C21.6569 11 23 9.65685 23 8V4ZM21 4C21 3.44772 20.5523 3 20 3H16C15.4477 3 15 3.44772 15 4V8C15 8.55228 15.4477 9 16 9H20C20.5523 9 21 8.55228 21 8V4Z" fill="#28afac"></path> <path fill-rule="evenodd" clip-rule="evenodd" d="M20 13C21.6569 13 23 14.3431 23 16V20C23 21.6569 21.6569 23 20 23H16C14.3431 23 13 21.6569 13 20V16C13 14.3431 14.3431 13 16 13H20ZM20 15C20.5523 15 21 15.4477 21 16V20C21 20.5523 20.5523 21 20 21H16C15.4477 21 15 20.5523 15 20V16C15 15.4477 15.4477 15 16 15H20Z" fill="#28afac">    
-                </path> </g></svg>
-                TIMELINE MATRIX
-            </button>
+        <nav class="flex flex-col flex-1 text-[10px] tracking-[0.2em] text-gray-500">
+            <template x-for="link in [
+                { id: 'commandCenter', label: 'COMMAND_CENTER', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
+                { id: 'taskNebula', label: 'TASK_NEBULA', icon: 'M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z' },
+                { id: 'focusChamber', label: 'FOCUS_CHAMBER', icon: 'M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
+                { id: 'timelineMatrix', label: 'TIMELINE_MATRIX', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01' }
+            ]">
+                <button @click="fetchPage(link.id); mobileMenu = false" 
+                        class="flex items-center gap-4 px-6 py-4 hover:bg-cyan-500/5 transition-all relative group"
+                        :class="$store.pageName.page === link.id ? 'text-cyan-400 bg-cyan-500/10' : ''">
+                    
+                    <!-- Active Indicator Tab -->
+                    <div x-show="$store.pageName.page === link.id" 
+                         class="absolute left-0 top-0 bottom-0 w-1 bg-cyan-400 shadow-[0_0_10px_#00f2ff]"></div>
+                    
+                    <svg class="w-4 h-4" :class="$store.pageName.page === link.id ? 'text-cyan-400' : 'text-gray-600 group-hover:text-cyan-500'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" :d="link.icon"></path>
+                    </svg>
+                    <span x-text="link.label"></span>
+                </button>
+            </template>
+        </nav>
+
+        <div class="p-6 border-t border-cyan-500/10">
+            <div class="flex items-center gap-2">
+                <div class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></div>
+                <span class="text-[8px] text-emerald-500/70 uppercase">Uplink_Active</span>
+            </div>
         </div>
     </aside>
-    <!-- End of side bar -->
 
-    <main id="main-container" class="text-cyan-400 relative  overflow-auto" style="margin-left:16.6667%; margin-top:4rem; height:calc(100vh - 4rem);">
-       {% include 'partials/command_center.html' %}
+    <!-- Backdrop for mobile -->
+    <div x-show="mobileMenu" @click="mobileMenu = false" x-cloak
+         class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-[85] md:hidden"></div>
+
+    <main id="main-container" class="text-cyan-400 relative overflow-x-hidden transition-all duration-300 md:ml-[16.6667%] mt-16 h-[calc(100vh-4rem)] w-full md:w-[83.3333%]">
+       {% if initial_page %}
+           {% include initial_page %}
+       {% else %}
+           {% include 'partials/command_center.html' %}
+       {% endif %}
     </main>
-
 
     <script type="importmap">
     {
@@ -84,10 +110,7 @@
         }
     }
     </script>
-
     <script type="module" src="{% static 'js/index.js' %}" defer></script>
-    
-
     {% block content %}{% endblock %}
 </body>
 </html>

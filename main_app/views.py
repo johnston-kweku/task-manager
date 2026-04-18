@@ -93,7 +93,9 @@ def create_task(request):
             priority_level=priority,
             description=description
         )
-        return redirect('home') # or wherever your main view
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'status': 'success'})
+        return redirect('home')
 
 @require_POST
 def update_task(request, pk):
@@ -122,7 +124,9 @@ def deactivate_task(request, task_id):
 def fetch_page(request, page_name):
     templates = {
         'commandCenter': 'partials/command_center.html',
-        'taskNebula': 'partials/task_nebula.html'
+        'taskNebula': 'partials/task_nebula.html',
+        'focusChamber': 'partials/focus_chamber.html',
+        'timelineMatrix': 'partials/timeline_matrix.html'
     }
 
     template_path = templates.get(page_name)
@@ -139,7 +143,7 @@ def fetch_page(request, page_name):
 
 
 def get_dashboard_context():
-    tasks = Task.objects.filter(completed=False).order_by('-priority_level')
+    tasks = Task.objects.filter(completed=False).order_by('-priority_level', 'name', 'created_at')
     total = Task.objects.count()
     completed = Task.objects.filter(completed=True).count()
     sync_rate = round((completed / total * 100), 1) if total > 0 else 0
@@ -147,6 +151,9 @@ def get_dashboard_context():
     return {
         'tasks': tasks,
         'sync_rate': sync_rate,
+        'total_count': total,
+        'completed_count': completed,
+        'pending_count': total - completed,
         'active_task': Task.objects.filter(is_active=True).first()
     }
 
@@ -154,9 +161,23 @@ def get_dashboard_context():
 def command_center_view(request):
     context = get_dashboard_context()
     context['initial_page'] = 'partials/command_center.html'
+    context['initial_page_name'] = 'commandCenter'
     return render(request, 'main_app/index.html', context)
 
 def task_nebula_view(request):
     context = get_dashboard_context()
-    context['initial_page'] = 'main_app/partials/task_nebula.html'
+    context['initial_page'] = 'partials/task_nebula.html'
+    context['initial_page_name'] = 'taskNebula'
+    return render(request, 'main_app/index.html', context)
+
+def focus_chamber_view(request):
+    context = get_dashboard_context()
+    context['initial_page'] = 'partials/focus_chamber.html'
+    context['initial_page_name'] = 'focusChamber'
+    return render(request, 'main_app/index.html', context)
+
+def timeline_matrix_view(request):
+    context = get_dashboard_context()
+    context['initial_page'] = 'partials/timeline_matrix.html'
+    context['initial_page_name'] = 'timelineMatrix'
     return render(request, 'main_app/index.html', context)
