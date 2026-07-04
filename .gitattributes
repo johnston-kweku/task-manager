@@ -1,0 +1,10 @@
+# Exclude entire static directories from language statistics
+static/*** linguist-vendored
+staticfiles/*** linguist-vendored
+
+# Exclude specific compiled CSS/JS assets (like Tailwind builds)
+*.min.js linguist-vendored
+*.min.css linguist-vendored
+
+# Alternatively, you can explicitly force certain files to be ignored by the linguist tool
+*.html linguist-documentation
